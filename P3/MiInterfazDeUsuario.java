@@ -109,6 +109,7 @@ public class MiInterfazDeUsuario {
         //Items Menu 3
         JMenuItem IDocumentacion = new JMenuItem("Documentacion");
         JMenuItem ISocorro = new JMenuItem("Generador de puntos aleatorios");
+        JMenuItem IAutomataCelular = new JMenuItem("Automata celular");
         //Submenu al menu 3
         JMenu IAcercaDe = new JMenu("Acerca de");
         JMenuItem INosotros = new JMenuItem("Nosotros");
@@ -121,6 +122,7 @@ public class MiInterfazDeUsuario {
         menu3.add(IDocumentacion);
         menu3.add(ISocorro);
         menu3.add(IAcercaDe);
+        menu3.add(IAutomataCelular);
 
         //Eventos del sistema
         boton1.addActionListener(new ActionListener(){@Override
@@ -212,6 +214,14 @@ public class MiInterfazDeUsuario {
             randomGenerator rG = new randomGenerator();
             rG.execute();
         }});
+
+        IAutomataCelular.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                ca1DSim AutomataCelularGui = new ca1DSim();
+                
+            }
+        });
 
 
         
