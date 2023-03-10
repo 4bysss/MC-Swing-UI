@@ -258,13 +258,13 @@ public class ca1DSim {
         for (int i = 0; i < arr1.length; i++) {
             arr1[i] = 0;
         }
-        arr1[arr1.length/2 - 1 ] = colores;
+        arr1[arr1.length/2 - 1 ] = 1;
 
     }
 
 
     private void kColores(int[]arr1,int[]arr2,int generaciones,Graphics g,JLabel contenedor,int[]claveBin,int nCol){
-        int[] temp = new int[arr1.length];
+        int[] temp;
         int suma;
         System.out.println(Arrays.toString(claveBin));
         System.out.println(Arrays.toString(arr1));
@@ -276,10 +276,8 @@ public class ca1DSim {
 
                 else if(j == arr1.length-1){ suma = (arr1[j]+arr1[0]+arr1[j-1]);}
 
-                else{ suma = arr1[j] + arr1[j+1] + arr1[j-1];
-                    System.out.println(suma +"="+arr1[j]+"+"+arr1[j+1]+"+"+arr1[j-1]);}
+                else{ suma = (arr1[j]+arr1[j+1]+arr1[j-1]);}
                 arr2[j] = claveBin[suma];
-                suma =0 ;
             }
         System.out.println(Arrays.toString(arr2));
             for (int k = 0; k < arr2.length; k++) {
@@ -312,10 +310,8 @@ public class ca1DSim {
                         break;
                 }
             }
-            arr1 = Arrays.copyOf(arr2, arr2.length);
-            /*for (int z = 0; z < arr1.length; z++) {
-               arr1[z] = arr2[z]; 
-            }*/
+
+            arr1 = arr2;
             contenedor.repaint();
         }
         System.out.println("Dibujo!");
