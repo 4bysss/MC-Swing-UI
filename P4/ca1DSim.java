@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.Font;
 
 
 
@@ -37,9 +38,9 @@ public class ca1DSim {
     private JSlider numVen;
     private JTextField valorVec;
     private JTextField celulaInicialIn;
-    private BufferedImage output;
-    private Graphics g;
-    private JLabel contenedor;
+    private BufferedImage output,outputH,outputD;
+    private Graphics g,gH,gD;
+    private JLabel contenedor,contenedorH,contenedorD,entroT,etiqEntroEs,eticDistHam;
     private JCheckBox distHam,entrEs,entroTemp;
     public int[] azul,rojo,verde;
     ca1DSim(){
@@ -79,9 +80,8 @@ public class ca1DSim {
         entrEs = new JCheckBox("Entropía temporal de una célula",false);
 
 
-        numVen = new JSlider();
-        numVen.setMinimum(1);
-        numVen.setMaximum(100);
+        numVen = new JSlider(1,100,1);
+    
 
         
         clave = new JTextField("Clave",9);
@@ -107,13 +107,32 @@ public class ca1DSim {
         g = output.getGraphics();
         g.setColor(new Color(21,21,21));
         g.fillRect(0, 0, ancho, alto);
-        
+
+        outputH = new BufferedImage(ancho,alto/4,BufferedImage.TYPE_INT_BGR);
+        gH = outputH.getGraphics();
+        gH.setColor(new Color(255,255,255));
+        gH.fillRect(0,0, ancho, alto/4);
+                
+
+        outputD = new BufferedImage(ancho,alto/4,BufferedImage.TYPE_INT_BGR);
+        gD = outputD.getGraphics();
+        gD.setColor(new Color(255,255,255));
+        gD.fillRect(0,0, ancho, alto/4);
+
+
+        eticDistHam = new JLabel("Distancia de Hamming:");
+        etiqEntroEs = new JLabel("Entropia espacial:");
+        entroT = new JLabel("Entropia temporal:");
+        entroT.setFont(new Font("Arial",Font.PLAIN,30));
         contenedor = new JLabel(new ImageIcon(output));
+        contenedorH = new JLabel(new ImageIcon(outputH));
+        contenedorD = new JLabel(new ImageIcon(outputD));
 
 
 
 
         //Añadimos los elementos a el frame
+        frame.add(entroT);
         frame.add(colores);
         frame.add(modoInicial);
         frame.add(CondicionF);
@@ -124,16 +143,40 @@ public class ca1DSim {
         frame.add(numVen);
         frame.add(valorVec);
         frame.add(contenedor);
+        frame.add(contenedorH);
+        frame.add(contenedorD);
         frame.add(celulaInicialIn);
         frame.add(distHam);
         frame.add(entroTemp);
         frame.add(entrEs);
+        frame.add(eticDistHam);
+        frame.add(etiqEntroEs);
 
         //Colocamos dentro del frame todos y cada uno de los elementos
         layout.putConstraint(SpringLayout.WEST, contenedor, 400, SpringLayout.EAST, frame);
-        layout.putConstraint(SpringLayout.NORTH, contenedor, 70, SpringLayout.NORTH, frame);
+        layout.putConstraint(SpringLayout.NORTH, contenedor, 30, SpringLayout.NORTH, frame);
         
         
+        layout.putConstraint(SpringLayout.WEST, contenedorH,0, SpringLayout.WEST, contenedor);
+        layout.putConstraint(SpringLayout.NORTH, contenedorH, 30, SpringLayout.SOUTH, contenedor);
+
+
+        layout.putConstraint(SpringLayout.EAST, etiqEntroEs,-30, SpringLayout.WEST, contenedorH);
+        layout.putConstraint(SpringLayout.NORTH, etiqEntroEs, 75, SpringLayout.NORTH, contenedorH);
+
+
+        layout.putConstraint(SpringLayout.WEST, contenedorD,0, SpringLayout.WEST, contenedorH);
+        layout.putConstraint(SpringLayout.NORTH, contenedorD, 30, SpringLayout.SOUTH, contenedorH);
+
+
+        layout.putConstraint(SpringLayout.EAST, eticDistHam,-30, SpringLayout.WEST, contenedorD);
+        layout.putConstraint(SpringLayout.NORTH, eticDistHam, 75, SpringLayout.NORTH, contenedorD);
+
+
+        layout.putConstraint(SpringLayout.WEST, entroT,30, SpringLayout.EAST, contenedorH);
+        layout.putConstraint(SpringLayout.NORTH, entroT, 165 , SpringLayout.NORTH, contenedorH);
+
+
         layout.putConstraint(SpringLayout.WEST, colores, 150, SpringLayout.EAST, contenedor);
         layout.putConstraint(SpringLayout.NORTH, colores, 350, SpringLayout.NORTH, contenedor);
 
@@ -234,12 +277,21 @@ public class ca1DSim {
             public void actionPerformed(ActionEvent arg0) {
                 g.clearRect(0, 0, contenedor.getWidth(), contenedor.getHeight());
                 contenedor.repaint();
+                gH.setColor(Color.WHITE);
+                gH.fillRect(0,0,contenedorH.getWidth(),contenedorH.getHeight());
+                contenedorH.repaint();
+                gD.setColor(Color.WHITE);
+                gD.fillRect(0,0,contenedorD.getWidth(),contenedorD.getHeight());
+                contenedorD.repaint();
+                entroT.setText("Entropia temporal:");
             }
         });
         generar.addActionListener(new ActionListener(){
 
 
             public void actionPerformed(ActionEvent arg0) {
+
+
                 boolean modoFront;
                 int[]arr1 = new int[ancho];
                 int[]arr2 = new int[ancho];
@@ -250,6 +302,16 @@ public class ca1DSim {
                 long key = Long.parseLong(clave.getText());
                 int Rvecinos = numVen.getValue();
                 int Tvecinos = 2 * Rvecinos + 1;
+                int selectedCell = Integer.parseInt(celulaInicialIn.getText());
+                
+                gH.setColor(Color.WHITE);
+                gH.fillRect(0,0,contenedorH.getWidth(),contenedorH.getHeight());
+                contenedorH.repaint();
+                gD.setColor(Color.WHITE);
+                gD.fillRect(0,0,contenedorD.getWidth(),contenedorD.getHeight());
+                contenedorD.repaint();
+
+
                 switch (mIni) {
                     case "Central":
                         generaCentral(arr1,Integer.parseInt(mCol)-1);
@@ -274,7 +336,8 @@ public class ca1DSim {
                     conversorKesimo(key, mCol,claveBin);
                     worker = new SwingWorker(){
                         protected Object doInBackground() throws Exception {
-                            kColores(arr1, arr2, generations, g,contenedor,claveBin,Integer.parseInt(mCol),modoFront, Rvecinos);
+                            kColores(arr1, arr2, generations, g,contenedor,claveBin,Integer.parseInt(mCol),modoFront, Rvecinos,selectedCell);
+
                             return null;
                         };
                     };
@@ -388,12 +451,16 @@ public class ca1DSim {
     }
 
 
-    private void kColores(int[]arr1,int[]arr2,int generaciones,Graphics g,JLabel contenedor,long[]claveBin,int nCol,boolean cFront,int Rvecinos){
-        int[] temp = new int[arr1.length];
+    private void kColores(int[]arr1,int[]arr2,int generaciones,Graphics g,JLabel contenedor,long[]claveBin,int nCol,boolean cFront,int Rvecinos,int selectedCell){
+
+        int[] cuentaCasosT = new int[5];
+        int[] cuentaCasos = new int[5];
         int suma = 0;
-        System.out.println(Arrays.toString(claveBin));
+        double H = 0;
+        int Dham = 0;
+
+
         for (int i = 0; i < generaciones; i++) {
-            int cosa = 0;
             for (int j = 0; j < arr1.length; j++) {
                 if(cFront){
                     for (int k = 0; k <= Rvecinos; k++) {
@@ -417,7 +484,9 @@ public class ca1DSim {
                 arr2[j] = (int)claveBin[suma];
                 suma = 0;
             }
+            cuentaCasosT[arr2[selectedCell]]++; 
             for (int k = 0; k < arr2.length; k++) {
+                cuentaCasos[arr2[k]]++;
                 switch (arr2[k]) {
                     case 0:
                        g.setColor(Color.GREEN);  g.drawOval(k, i, 1, 1); 
@@ -447,14 +516,70 @@ public class ca1DSim {
                         break;
                 }
             }
-            arr1 = Arrays.copyOf(arr2, arr2.length);
+
+            if(entrEs.isSelected()){
+                H = entropiaEspacial(cuentaCasos, generaciones, i, H);
+            }
+            if(distHam.isSelected()){
+                Dham = distanciaHamming(arr1, arr2, i, Dham);
+            }
+
+            if(entroTemp.isSelected()){
+                double HT = 0;
+                for (int k = 0; k < cuentaCasosT.length; k++){
+                    if(cuentaCasosT[k]!=0){
+
+                        HT += ((double)((double)cuentaCasosT[k]/generaciones) * (double)(logConversion((double)cuentaCasosT[k]/generaciones)));
+                    }
+                
+                }
+            HT = -HT;
+            System.out.println(HT);
+            entroT.setText("Entropia temporal: " + HT );
+         }
+            for (int j = 0; j < cuentaCasos.length; j++) {
+                cuentaCasos[j] = 0;
+            }
             /*for (int z = 0; z < arr1.length; z++) {
                arr1[z] = arr2[z]; 
             }*/
+            arr1 = Arrays.copyOf(arr2, arr2.length);
             contenedor.repaint();
+
         }
     }
+    public static double logConversion(double x){
+        return(Math.log(x)/Math.log(2));
+    }
+    
+    public  double entropiaEspacial(int[] cuentaCasos,int generaciones,int x, double y){
+        double item = 600;
+        double H = 0;
+        for (int k = 0; k < cuentaCasos.length; k++) {
+            if(cuentaCasos[k]!=0){
+                H += ((double)((double)cuentaCasos[k]/item) * (double)(logConversion((double)cuentaCasos[k]/item)));
+            }
+        }
+        H = -H;
+        gH.setColor(Color.RED);
+        gH.drawLine(x, 149-(int)(60*y), x+1,149-(int)(60*H));
+        contenedorH.repaint();
+        return H;
 
+
+    }
+    public int distanciaHamming(int[]arr1,int[]arr2,int x, int y){
+        int contador = 0;
+        for (int i = 0; i < arr2.length; i++) {
+            if(arr1[i]!=arr2[i]){
+                contador++;
+            }
+        }
+        gD.setColor(Color.BLUE);
+        gD.drawLine(x,149 - y/4, x+1, 149 - contador/4);
+        contenedorD.repaint();
+        return contador;
+    }
 
 
 }
