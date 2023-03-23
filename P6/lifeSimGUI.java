@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.SwingWorker;
+
 import java.awt.event.FocusListener;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -46,7 +48,7 @@ public class lifeSimGUI {
         contenedorVida = new JLabel();
         contenedorGrafica = new JLabel();
         imagenVida = new BufferedImage(ancho, alto,BufferedImage.TYPE_INT_BGR);
-        imagenGrafica = new BufferedImage(ancho, alto,BufferedImage.TYPE_INT_BGR);
+        imagenGrafica = new BufferedImage(ancho/3, alto/3,BufferedImage.TYPE_INT_BGR);
         gVida = imagenVida.getGraphics();
         gGrafica = imagenGrafica.getGraphics();
 
@@ -90,11 +92,93 @@ public class lifeSimGUI {
                         break;
 
                 }
+                SwingWorker w = new SwingWorker<>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        // TODO Auto-generated method stub
+                        for (int i = 0; i < nGen; i++) {
+                            //TODO llamar a generar
+                        }
+                        return null;
+                    }
+                };
 
 
             }
         });
 
+        GenerarMas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                SwingWorker w = new SwingWorker<>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        int nGen = Integer.parseInt(TFGeneraciones.getText());
+                        for (int i = 0; i < nGen; i++) {
+                            //TODO llamar a generar
+                        }
+                        return null;
+                    }
+                };
+            }
+        });
+
+        GenerarIlimitado.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                SwingWorker w = new SwingWorker<>() {
+                    protected Object doInBackground() throws Exception {
+                        while(flag){
+                            //TODO llamar a generar
+                        }
+                        return null;
+                    }
+                };
+            }
+        });
+
+        Detener.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                SwingWorker w = new SwingWorker<>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        flag=false;
+                        return null;
+                    }        
+                };
+            }
+        });
+
+        Reset.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                SwingWorker w = new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        flag = false;
+                        gVida.clearRect(0, 0, ancho, alto);
+                        gGrafica.clearRect(0, 0, ancho/3, alto/3);
+                        contenedorVida.repaint();
+                        contenedorGrafica.repaint();
+                        return null;
+                    }
+                };
+            }
+        });
+
+        //Incluimos los elementos al frame;
+        frame.add(TFGeneraciones);
+        frame.add(CBModoInicial);
+        frame.add(Generar);
+        frame.add(GenerarMas);
+        frame.add(GenerarIlimitado);
+        frame.add(Reset);
+        frame.add(Detener);
+        frame.add(contenedorVida);
+        frame.add(contenedorGrafica);
+
+
+        
 
 
 
