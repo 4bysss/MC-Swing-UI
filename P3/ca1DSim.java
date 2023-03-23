@@ -129,15 +129,10 @@ public class ca1DSim {
                     default:
                         break;
                 }
-                if(key>Math.pow(Integer.parseInt(mCol),3*Integer.parseInt(mCol)-2)-1){
-                    //TODO mensaje de error
-                    System.out.println(key+"error"+(Math.pow(Integer.parseInt(mCol),3*Integer.parseInt(mCol)-2)-1));
-                }
-                else{
                     SwingWorker worker;
                     int[] claveBin;
 
-                    claveBin = new int[3*(Integer.parseInt(mCol))-2];
+                    claveBin = new int[100];
                     conversorKesimo(key, mCol,claveBin);
                     worker = new SwingWorker(){
                         protected Object doInBackground() throws Exception {
@@ -146,7 +141,6 @@ public class ca1DSim {
                         };
                     };
                     worker.execute();
-                }
 
             }
 
@@ -175,10 +169,8 @@ public class ca1DSim {
 
                 }
                 for (int j = 0; j < Arraux.length; j++) {
-                    inputOutput[j]=Arraux[Arraux.length - j - 1];
+                    inputOutput[j]=Arraux[j];
                 }
-                System.out.println(Arrays.toString(inputOutput));
-                System.out.println(Arrays.toString(Arraux));
                 break;
 
             case "3":
@@ -198,8 +190,6 @@ public class ca1DSim {
                 for (int j = 0; j < Arraux.length; j++) {
                     inputOutput[j]=Arraux[j];
                 }
-                System.out.println(Arrays.toString(inputOutput));
-                System.out.println(Arrays.toString(Arraux));
                 break;
             case "4":
                 aux = clave;
@@ -218,8 +208,6 @@ public class ca1DSim {
                 for (int j = 0; j < Arraux.length; j++) {
                     inputOutput[j]=Arraux[Arraux.length - j - 1];
                 }
-                System.out.println(Arrays.toString(inputOutput));
-                System.out.println(Arrays.toString(Arraux));
                 break;
             case "5":
                 aux = clave;
@@ -238,8 +226,6 @@ public class ca1DSim {
                 for (int j = 0; j < Arraux.length; j++) {
                     inputOutput[j]=Arraux[j];
                 }
-                System.out.println(Arrays.toString(inputOutput));
-                System.out.println(Arrays.toString(Arraux));
                 break;
         }
     }
@@ -266,7 +252,6 @@ public class ca1DSim {
     private void kColores(int[]arr1,int[]arr2,int generaciones,Graphics g,JLabel contenedor,int[]claveBin,int nCol){
         int[] temp = new int[arr1.length];
         int suma;
-        System.out.println(Arrays.toString(claveBin));
         System.out.println(Arrays.toString(arr1));
         for (int i = 0; i < generaciones; i++) {
             int cosa = 0;
@@ -276,12 +261,10 @@ public class ca1DSim {
 
                 else if(j == arr1.length-1){ suma = (arr1[j]+arr1[0]+arr1[j-1]);}
 
-                else{ suma = arr1[j] + arr1[j+1] + arr1[j-1];
-                    System.out.println(suma +"="+arr1[j]+"+"+arr1[j+1]+"+"+arr1[j-1]);}
+                else{ suma = arr1[j] + arr1[j+1] + arr1[j-1];}
                 arr2[j] = claveBin[suma];
                 suma =0 ;
             }
-        System.out.println(Arrays.toString(arr2));
             for (int k = 0; k < arr2.length; k++) {
                 switch (arr2[k]) {
                     case 0:
@@ -318,9 +301,7 @@ public class ca1DSim {
             }*/
             contenedor.repaint();
         }
-        System.out.println("Dibujo!");
     }
-
 
 
 }

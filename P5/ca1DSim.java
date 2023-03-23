@@ -425,7 +425,7 @@ public class ca1DSim {
  
 
 
-    private void generaAleatorio(int[]arr1,int nCol){
+    public void generaAleatorio(int[]arr1,int nCol){
         int rand = 7;
         for (int i = 0; i < arr1.length; i++) {
             rand = (int)randomGenerator.Randu((long)rand);
