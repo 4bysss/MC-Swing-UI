@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.ActionEvent;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -43,7 +42,6 @@ public class lifeSimGUI {
         frame = new JFrame("Game of Life");
         layout = new SpringLayout();
         TFGeneraciones = new JTextField("Generaciones");
-        TFGeneraciones.setPreferredSize(new Dimension(100,30));
         CBModoInicial = new JComboBox<>(modos);
         Generar = new JButton("Generar");//TODO Añador action listener
         Reset = new JButton("Reset");//TODO Añadir action listener
@@ -202,7 +200,7 @@ public class lifeSimGUI {
         layout.putConstraint(SpringLayout.NORTH, contenedorGrafica, 40, SpringLayout.SOUTH, contenedorVida);
 
         layout.putConstraint(SpringLayout.WEST, TFGeneraciones, 40, SpringLayout.EAST, contenedorVida);
-        layout.putConstraint(SpringLayout.NORTH, TFGeneraciones, 150, SpringLayout.NORTH, contenedorVida);
+        layout.putConstraint(SpringLayout.NORTH, TFGeneraciones, 300, SpringLayout.NORTH, contenedorVida);
 
         layout.putConstraint(SpringLayout.WEST, Generar, 0, SpringLayout.WEST, TFGeneraciones);
         layout.putConstraint(SpringLayout.NORTH, Generar, 30, SpringLayout.SOUTH, TFGeneraciones);

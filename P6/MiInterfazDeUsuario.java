@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
  */
 public class MiInterfazDeUsuario {
     private JFrame ventana;
-    private JButton boton1,boton2,boton3;
+    private JButton boton1,boton2,boton3,GameOfFife;
     private JMenuBar barraMenu;
     private JMenu menu1,menu2,menu3;
     private JMenuItem[] itemsmenu1;
@@ -48,7 +48,7 @@ public class MiInterfazDeUsuario {
         //Creacion de los botones
         boton1 = new JButton("No hago nada");
         boton2 = new JButton("Yo tampoco");
-        boton3 = new JButton("Soy Absolutanmente inutil");
+        boton3 = new JButton("The game of life");
         
 
         //Colocamos los botones
@@ -141,7 +141,7 @@ public class MiInterfazDeUsuario {
 
         boton3.addActionListener(new ActionListener(){@Override
         public void actionPerformed(ActionEvent arg0) {
-            mostrarVentana("Boton3");
+            lifeSimGUI execute = new lifeSimGUI();
         }});
 
 
