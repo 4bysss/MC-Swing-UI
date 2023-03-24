@@ -250,7 +250,27 @@ public class lifeSimGUI {
         int suma = 0;
         for (int i = 0; i < M1.length; i++) {
             for (int j = 0; j < M1.length; j++) {
-                if(i==0)
+                if(i == 0){
+                    suma += M1[i][j] + M1[i+1][j];
+                }
+                if(i == M1.length-1){
+                    suma += M1[i][j] + M1[i-1][j];
+                }
+                if(j == 0){
+                    suma += M1[i][j] + M1[i][j+1];
+                }
+                if(j == M1.length-1){
+                    suma += M1[i][j] + M1[i][j-1];
+                }
+                if(i != 0 && i != M1.length-1 && j != 0 && j != M1.length-1){
+                    suma += M1[i][j] + M1[i-1][j] + M1[i+1][j] + M1[i][j-1] + M1[i][j+1];
+                }
+                int estadoCel = M1[i][j];
+                estadoCel = estadoCel * (suma>=2 ? 1:0);
+                //estadoCel = estadoCel * ((suma==2 || suma==3) ? 1:0);
+                estadoCel = estadoCel * (suma<=3 ? 1:0);
+                estadoCel = estadoCel + (estadoCel==0 ? 1:0) * (suma==3 ? 1:0);
+
             }
         }
         return M1;
