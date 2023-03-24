@@ -46,9 +46,9 @@ public class lifeSimGUI {
         TFGeneraciones.setPreferredSize(new Dimension(100,30));
         CBModoInicial = new JComboBox<>(modos);
         Generar = new JButton("Generar");//TODO Añador action listener
-        Reset = new JButton("Reset");//TODO Añadir action listener
-        GenerarMas = new JButton("Generar más");//TODO Dar action listener
-        GenerarIlimitado = new JButton("Generar Ilimitado");//TODO Dar action listener
+        Reset = new JButton("Reset");
+        GenerarMas = new JButton("Generar más");
+        GenerarIlimitado = new JButton("Generar Ilimitado");
         Detener = new JButton("Detener");
         imagenVida = new BufferedImage(ancho, alto,BufferedImage.TYPE_INT_BGR);
         imagenGrafica = new BufferedImage(ancho, alto/3,BufferedImage.TYPE_INT_BGR);
@@ -107,7 +107,6 @@ public class lifeSimGUI {
                 SwingWorker w = new SwingWorker<>() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        // TODO Auto-generated method stub
                         for (int i = 0; i < nGen; i++) {
                             //TODO llamar a generar
                         }
@@ -234,7 +233,29 @@ public class lifeSimGUI {
 
 
     }
-    //TODO Generador aleatorio
+
+    public int[][] GeneraAleatorio(int[][]M1){
+        long aux = 7;
+        for (int i = 0; i < M1.length; i++) {
+            for (int j = 0; j < M1.length; j++) {
+                aux = randomGenerator.Randu(aux);
+                M1[i][j] = (int)aux%2;
+
+            }
+        }
+        return M1;
+    }
+
+    public int[][] nucleoCompu(int[][] M1, int[][] M2){
+        int suma = 0;
+        for (int i = 0; i < M1.length; i++) {
+            for (int j = 0; j < M1.length; j++) {
+                if(i==0)
+            }
+        }
+        return M1;
+    }
+    //TODO Crear funcion Pinta
     //TODO Generador de islas
     //TODO Generador de cosas que disparan
     //TODO Crear nuclero cumputacional del juego de la vida
