@@ -13,6 +13,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ActionEvent;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -276,6 +277,39 @@ public class lifeSimGUI {
         return M1;
     }
     //TODO Crear funcion Pinta
+    private void pinta(int[][]M1,int numVivos,int numVivosAntes,int generacionActual,Graphics gVida,Graphics Ggrafica,BufferedImage imagenGrafica, JLabel contenedorVida, JLabel contenedorGrafica){
+
+
+        for (int i = 0; i < M1.length; i++) {
+            for (int j = 0; j < M1.length; j++) {
+                gVida.fillRect(i*anchoCel, j*altoCel, i*(anchoCel+1), j*(altoCel+1));
+            }
+        }
+
+        if(generacionActual>ancho){
+            Ggrafica.drawImage(new ImageIcon(imagenGrafica).getImage(),-1,0,null);
+            Ggrafica.drawLine(ancho-1, numVivosAntes, ancho, numVivos); 
+        }
+        else{
+            Ggrafica.drawLine(generacionActual-1, numVivosAntes, generacionActual, numVivos); 
+
+        }
+        contenedorVida.repaint();
+        contenedorGrafica.repaint();
+    };
+
+
+    private int cuentaVivos(int[][]M1){
+        int vivos = 0;
+        for (int i = 0; i < M1.length; i++) {
+            for (int j = 0; j < M1.length; j++) {
+                if(M1[i][j] != 0){
+                    vivos++;
+                }
+            }
+        }
+        return vivos;
+    }
     //TODO Generador de islas
     //TODO Generador de cosas que disparan
     //TODO Crear nuclero cumputacional del juego de la vida
