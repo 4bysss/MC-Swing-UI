@@ -17,11 +17,13 @@ import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 /**
  * lifeSimGUI
  */
 public class lifeSimGUI {
-    private int ancho,alto,anchoCel,altoCel;
+    private int ancho,alto,anchoCel,altoCel,nGen;
     private int[][] M1,M2;
     private JFrame frame;
     private boolean flag;
@@ -38,9 +40,10 @@ public class lifeSimGUI {
         //Inicializamos todo los elementos
         ancho = alto = 600;
         anchoCel = altoCel = 6;
+        nGen = 0;
         M1 = new int[100][100];
         M2 = new int[100][100];
-        String [] modos = {"Aleatorio", "Islas","Dispara!!!!"};
+        String [] modos = {"Aleatorio", "Islas","Dispara!!!"};
         frame = new JFrame("Game of Life");
         layout = new SpringLayout();
         TFGeneraciones = new JTextField("Generaciones");
@@ -92,24 +95,33 @@ public class lifeSimGUI {
         Generar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                int nGen = Integer.parseInt(TFGeneraciones.getText());
+                flag = true;
+                nGen = Integer.parseInt(TFGeneraciones.getText());
                 String SelectedMode = (String)CBModoInicial.getSelectedItem();
                 switch (SelectedMode) {
                     case "Aleatorio":
-                        
+                        GeneraAleatorio(M1,nGen);
                         break;
                     case "Islas":
                         break;
 
                     case"Dispara!!!":
+                        generaGlider(M1);
                         break;
 
                 }
                 SwingWorker w = new SwingWorker<>() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        for (int i = 0; i < nGen; i++) {
-                            //TODO llamar a generar
+                        int old = cuentaVivos(M1);
+                        int nuevo = old;
+                        for (int i = 0; i < nGen&&flag==true; i++) {
+
+                            pinta(M1, nuevo/20, old/20, i, gVida, gGrafica, imagenGrafica, contenedorVida, contenedorGrafica);
+                            M1 = nucleoCompu(M1, M2);
+                            old = nuevo;
+                            nuevo = cuentaVivos(M1);
+                            TimeUnit.MILLISECONDS.sleep(10);
                         }
                         return null;
                     }
@@ -126,9 +138,16 @@ public class lifeSimGUI {
                 SwingWorker w = new SwingWorker<>() {
                     @Override
                     protected Object doInBackground() throws Exception {
-                        int nGen = Integer.parseInt(TFGeneraciones.getText());
-                        for (int i = 0; i < nGen; i++) {
-                            //TODO llamar a generar
+                        int add = Integer.parseInt(TFGeneraciones.getText());
+                        int old = cuentaVivos(M1);
+                        int nuevo = old;
+                        for (int i = nGen; i < nGen+add&&flag==true; i++) {
+
+                            pinta(M1, nuevo/20, old/20, i, gVida, gGrafica, imagenGrafica, contenedorVida, contenedorGrafica);
+                            M1 = nucleoCompu(M1, M2);
+                            old = nuevo;
+                            nuevo = cuentaVivos(M1);
+                            TimeUnit.MILLISECONDS.sleep(10);
                         }
                         return null;
                     }
@@ -140,10 +159,33 @@ public class lifeSimGUI {
         GenerarIlimitado.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                flag = true;
+                nGen = Integer.parseInt(TFGeneraciones.getText());
+                String SelectedMode = (String)CBModoInicial.getSelectedItem();
+                switch (SelectedMode) {
+                    case "Aleatorio":
+                        GeneraAleatorio(M1,nGen);
+                        break;
+                    case "Islas":
+                        break;
+
+                    case"Dispara!!!":
+                        generaGlider(M1);
+                        break;
+
+                }
                 SwingWorker w = new SwingWorker<>() {
                     protected Object doInBackground() throws Exception {
-                        while(flag){
-                            //TODO llamar a generar
+                        int add = Integer.parseInt(TFGeneraciones.getText());
+                        int old = cuentaVivos(M1);
+                        int nuevo = old;
+                        for (int i = nGen;flag==true; i++) {
+
+                            pinta(M1, nuevo/20, old/20, i, gVida, gGrafica, imagenGrafica, contenedorVida, contenedorGrafica);
+                            M1 = nucleoCompu(M1, M2);
+                            old = nuevo;
+                            nuevo = cuentaVivos(M1);
+                            TimeUnit.MILLISECONDS.sleep(10);
                         }
                         return null;
                     }
@@ -176,6 +218,11 @@ public class lifeSimGUI {
                         gGrafica.clearRect(0, 0, ancho, alto/3);
                         contenedorVida.repaint();
                         contenedorGrafica.repaint();
+                        for (int i = 0; i < M1.length; i++) {
+                            for (int j = 0; j < M1.length; j++) {
+                                M1[i][j] = 0;
+                            }
+                        }
                         return null;
                     }
                 };
@@ -235,8 +282,8 @@ public class lifeSimGUI {
 
     }
 
-    public int[][] GeneraAleatorio(int[][]M1){
-        long aux = 7;
+    public int[][] GeneraAleatorio(int[][]M1,int seed){
+        long aux = seed;
         for (int i = 0; i < M1.length; i++) {
             for (int j = 0; j < M1.length; j++) {
                 aux = randomGenerator.Randu(aux);
@@ -247,53 +294,66 @@ public class lifeSimGUI {
         return M1;
     }
 
-    public int[][] nucleoCompu(int[][] M1, int[][] M2){
+    public int[][] nucleoCompu(int[][] M1, int[][] M2)throws Exception{
         int suma = 0;
+        int estadoCel = 0;
         for (int i = 0; i < M1.length; i++) {
             for (int j = 0; j < M1.length; j++) {
-                if(i == 0){
-                    suma += M1[i][j] + M1[i+1][j];
+                if(i==0){
+                    if(j==0){suma += M1[i+1][j] + M1[i][j+1] + M1[i+1][j+1];}
+                    else if(j==M1.length-1){suma += M1[i+1][j] + M1[i][j-1] + M1[i+1][j-1];}
+                    else{suma += M1[i+1][j] + M1[i][j+1] + M1[i+1][j+1] + M1[i+1][j-1] + M1[i][j-1];}
                 }
-                if(i == M1.length-1){
-                    suma += M1[i][j] + M1[i-1][j];
+                else if(i==M1.length-1){
+                    if(j==0){suma += M1[i-1][j] + M1[i][j+1] + M1[i-1][j+1];}
+                    else if(j==M1.length-1){suma += M1[i-1][j] + M1[i][j-1] + M1[i-1][j-1];}
+                    else{suma += M1[i-1][j] + M1[i][j+1] + M1[i-1][j+1] + M1[i-1][j-1] + M1[i][j-1];}
+                    
                 }
-                if(j == 0){
-                    suma += M1[i][j] + M1[i][j+1];
-                }
-                if(j == M1.length-1){
-                    suma += M1[i][j] + M1[i][j-1];
-                }
-                if(i != 0 && i != M1.length-1 && j != 0 && j != M1.length-1){
-                    suma += M1[i][j] + M1[i-1][j] + M1[i+1][j] + M1[i][j-1] + M1[i][j+1];
-                }
-                int estadoCel = M1[i][j];
-                estadoCel = estadoCel * (suma>=2 ? 1:0);
-                //estadoCel = estadoCel * ((suma==2 || suma==3) ? 1:0);
-                estadoCel = estadoCel * (suma<=3 ? 1:0);
-                estadoCel = estadoCel + (estadoCel==0 ? 1:0) * (suma==3 ? 1:0);
+                else if(i!=0 && i!=M1.length-1){
+                    if(j==0){suma += M1[i-1][j] + M1[i+1][j] + M1[i][j+1] + M1[i-1][j+1] + M1[i+1][j+1];}
+                    else if(j==M1.length-1){suma += M1[i-1][j] + M1[i+1][j] + M1[i][j-1] + M1[i-1][j-1] + M1[i+1][j-1];}
+                    else{suma += M1[i-1][j] + M1[i+1][j] + M1[i][j+1] + M1[i][j-1] + M1[i-1][j+1] + M1[i+1][j+1] + M1[i-1][j-1] + M1[i+1][j-1];}
 
+                }
+                estadoCel = M1[i][j];
+                if(estadoCel==1 && suma>=2 && suma<=3){M2[i][j]=1;}
+                else if(estadoCel==0 && suma==3){M2[i][j]=1;}
+                else{M2[i][j]=0;}
+                //estadoCel = estadoCel * ((suma==2 || suma==3) ? 1:0);
+                suma = 0;
+
+            }
+        }
+        for (int i = 0; i < M1.length; i++) {
+            for (int j = 0; j < M1.length; j++) {
+                M1[i][j] = M2[i][j];
             }
         }
         return M1;
     }
-    //TODO Crear funcion Pinta
     private void pinta(int[][]M1,int numVivos,int numVivosAntes,int generacionActual,Graphics gVida,Graphics Ggrafica,BufferedImage imagenGrafica, JLabel contenedorVida, JLabel contenedorGrafica){
-
-
+        BufferedImage aux = new BufferedImage(ancho, alto/3, BufferedImage.TYPE_INT_BGR);
+        Ggrafica = aux.getGraphics();
+        Ggrafica.setColor(Color.RED);
+        Ggrafica.drawImage(imagenGrafica, -1, 0, null);
         for (int i = 0; i < M1.length; i++) {
             for (int j = 0; j < M1.length; j++) {
-                gVida.fillRect(i*anchoCel, j*altoCel, i*(anchoCel+1), j*(altoCel+1));
+                if(M1[i][j]!=0){
+                    gVida.setColor(Color.BLUE);
+                    gVida.fillRect(i*anchoCel, j*altoCel, i*(anchoCel+1), j*(altoCel+1));
+                }
+                else{
+
+                    gVida.setColor(Color.BLACK);
+                    gVida.fillRect(i*anchoCel, j*altoCel, i*(anchoCel+1), j*(altoCel+1));
+                }
             }
         }
-
-        if(generacionActual>ancho){
-            Ggrafica.drawImage(new ImageIcon(imagenGrafica).getImage(),-1,0,null);
-            Ggrafica.drawLine(ancho-1, numVivosAntes, ancho, numVivos); 
-        }
-        else{
-            Ggrafica.drawLine(generacionActual-1, numVivosAntes, generacionActual, numVivos); 
-
-        }
+        
+        Ggrafica.drawLine(ancho-1,200 - numVivosAntes, ancho-1, 200 - numVivos); 
+        gGrafica = imagenGrafica.getGraphics();
+        gGrafica.drawImage(aux, 0, 0, null);
         contenedorVida.repaint();
         contenedorGrafica.repaint();
     };
@@ -312,5 +372,16 @@ public class lifeSimGUI {
     }
     //TODO Generador de islas
     //TODO Generador de cosas que disparan
+    private int[][] generaGlider(int[][] M1){
+        int[][]gliderTemplate = {{0,1,0},{0,0,1},{1,1,1}};
+        for (int i = 0; i < M1.length; i+=5) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0 ; k < 3; k++) {
+                   M1[i+k][j] =gliderTemplate[j][k]; 
+                }
+            }
+        }
+        return M1;
+    } 
     //TODO Crear nuclero cumputacional del juego de la vida
 }
