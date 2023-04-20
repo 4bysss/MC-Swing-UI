@@ -34,7 +34,7 @@ public class tumoralGrowth {
     private SpringLayout layout;
     private JTextField TFGeneraciones,Ps_TF,Pp_TF,Np_TF,Pm_TF;
     private JComboBox<String>CBModoInicial;
-    private JButton Generar,Reset,GenerarMas,GenerarIlimitado,Detener;
+    private JButton Generar,Reset,GenerarMas,GenerarIlimitado,Detener,ConfigInicial;
     private JLabel contenedorVida, contenedorGrafica;
     private BufferedImage imagenVida,imagenGrafica;
     private Graphics gVida,gGrafica;
@@ -47,17 +47,27 @@ public class tumoralGrowth {
         anchoCel = altoCel = 6;
         nGen = 0;
         estadoTumor = new boolean[100][100][2];
-        String [] modos = {"Aleatorio"};
+        String [] modos = {"Default","Personalizado"};
         frame = new JFrame("Crecimiento Tumoral");
         layout = new SpringLayout();
         TFGeneraciones = new JTextField("Generaciones");
+        Pp_TF = new JTextField("PP");
+        Ps_TF = new JTextField("PS");
+        Pm_TF = new JTextField("PM");
+        Np_TF = new JTextField("NP");
+    
         TFGeneraciones.setPreferredSize(new Dimension(100,30));
+        Pp_TF.setPreferredSize(new Dimension(30,30));
+        Ps_TF.setPreferredSize(new Dimension(30,30));
+        Pm_TF.setPreferredSize(new Dimension(30,30));
+        Np_TF.setPreferredSize(new Dimension(30,30));
         CBModoInicial = new JComboBox<>(modos);
         Generar = new JButton("Generar");//TODO Añador action listener
         Reset = new JButton("Reset");
         GenerarMas = new JButton("Generar más");
         GenerarIlimitado = new JButton("Generar Ilimitado");
         Detener = new JButton("Detener");
+        ConfigInicial = new JButton("Personalizar");
         imagenVida = new BufferedImage(ancho, alto,BufferedImage.TYPE_INT_BGR);
         imagenGrafica = new BufferedImage(ancho, alto/3,BufferedImage.TYPE_INT_BGR);
         gVida = imagenVida.getGraphics();
@@ -107,6 +117,7 @@ public class tumoralGrowth {
                     @Override
 
                     protected Object doInBackground() throws Exception {
+                        
                         old = nuevo = cuentaVivos(estadoTumor);
                         normaliza(old,45);
 
@@ -234,6 +245,7 @@ public class tumoralGrowth {
         frame.add(Detener);
         frame.add(contenedorVida);
         frame.add(contenedorGrafica);
+        frame.add(ConfigInicial);
         frame.add(Pp_TF);
         frame.add(Ps_TF);
         frame.add(Pm_TF);
@@ -249,16 +261,16 @@ public class tumoralGrowth {
         layout.putConstraint(SpringLayout.WEST, TFGeneraciones, 40, SpringLayout.EAST, contenedorVida);
         layout.putConstraint(SpringLayout.NORTH, TFGeneraciones, 150, SpringLayout.NORTH, contenedorVida);
 
-        layout.putConstraint(SpringLayout.WEST, Pm_TF, 40, SpringLayout.EAST, TFGeneraciones);
+        layout.putConstraint(SpringLayout.WEST, Pm_TF, 20, SpringLayout.EAST, TFGeneraciones);
         layout.putConstraint(SpringLayout.NORTH, Pm_TF, 0, SpringLayout.NORTH, TFGeneraciones);
 
-        layout.putConstraint(SpringLayout.WEST, Pp_TF, 80, SpringLayout.EAST, TFGeneraciones);
+        layout.putConstraint(SpringLayout.WEST, Pp_TF, 60, SpringLayout.EAST, TFGeneraciones);
         layout.putConstraint(SpringLayout.NORTH, Pp_TF, 0, SpringLayout.NORTH, TFGeneraciones);
 
-        layout.putConstraint(SpringLayout.WEST, Np_TF, 120, SpringLayout.EAST, TFGeneraciones);
+        layout.putConstraint(SpringLayout.WEST, Np_TF, 100, SpringLayout.EAST, TFGeneraciones);
         layout.putConstraint(SpringLayout.NORTH, Np_TF, 0, SpringLayout.NORTH, TFGeneraciones);
 
-        layout.putConstraint(SpringLayout.WEST, Ps_TF, 160, SpringLayout.EAST, TFGeneraciones);
+        layout.putConstraint(SpringLayout.WEST, Ps_TF, 140, SpringLayout.EAST, TFGeneraciones);
         layout.putConstraint(SpringLayout.NORTH, Ps_TF, 0, SpringLayout.NORTH, TFGeneraciones);
 
         layout.putConstraint(SpringLayout.WEST, Generar, 0, SpringLayout.WEST, TFGeneraciones);
@@ -278,6 +290,10 @@ public class tumoralGrowth {
 
         layout.putConstraint(SpringLayout.WEST, CBModoInicial, 0, SpringLayout.WEST, Detener);
         layout.putConstraint(SpringLayout.NORTH, CBModoInicial, 30, SpringLayout.SOUTH, Detener);
+        
+        layout.putConstraint(SpringLayout.WEST, ConfigInicial, 20, SpringLayout.EAST, CBModoInicial);
+        layout.putConstraint(SpringLayout.NORTH, ConfigInicial, 0, SpringLayout.NORTH, CBModoInicial);
+
         
 
         //Llenamos los elemntos graficos con negro
@@ -347,4 +363,5 @@ public class tumoralGrowth {
     }
     //TODO Calculardora de probabilidades
     private void calculaProbabilidad(float[]probabilidades){}
+    private void ventanaConfig(){}
 }

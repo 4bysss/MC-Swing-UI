@@ -129,7 +129,7 @@ public class MiInterfazDeUsuario {
         //Eventos del sistema
         boton1.addActionListener(new ActionListener(){@Override
         public void actionPerformed(ActionEvent arg0) {
-            mostrarVentana("Boton1");
+            tumoralGrowth execute = new tumoralGrowth();
         }});
 
 
