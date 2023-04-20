@@ -4,11 +4,18 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import javax.swing.SwingWorker;
 
 import java.awt.event.FocusListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.ActionEvent;
@@ -235,6 +242,15 @@ public class tumoralGrowth {
             }
         });
 
+        ConfigInicial.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                ventanaConfig();
+            }
+        });
+
+
+
         //Incluimos los elementos al frame;
         frame.add(TFGeneraciones);
         frame.add(CBModoInicial);
@@ -363,5 +379,32 @@ public class tumoralGrowth {
     }
     //TODO Calculardora de probabilidades
     private void calculaProbabilidad(float[]probabilidades){}
-    private void ventanaConfig(){}
+
+
+    private void ventanaConfig(){
+        JFrame frameaux = new JFrame("Ventana generica");
+        JPanel panel = new JPanel(new GridLayout(100,100));
+        panel.setPreferredSize(new Dimension(3000,3000));
+        frameaux.setResizable(true);
+        JToggleButton[][] botones = new JToggleButton[100][100];
+        for (int i = 0; i < 100; i++) {
+           for (int j = 0; j < 100; j++) {
+               botones[i][j] = new JToggleButton();
+               botones[i][j].setPreferredSize(new Dimension(30,30)); 
+               panel.add(botones[i][j]);
+           } 
+        }
+        frameaux.getContentPane().add(panel);
+        frameaux.pack();
+        frameaux.setLocationRelativeTo(null);
+        frameaux.setVisible(true);
+        frame.addWindowListener(new WindowAdapter(){
+             @Override
+             public void windowClosing(WindowEvent arg0) {
+
+                     
+             }
+        });
+
+    }
 }
