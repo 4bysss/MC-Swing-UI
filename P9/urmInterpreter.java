@@ -18,6 +18,8 @@ public class urmInterpreter {
     private JMenu Archivo;
     private JMenuItem Cargar,Guardar;
 
+    private int[] registros;
+    private int contadorDePrograma;
     urmInterpreter(){
        int ancho,alto;
        ancho = alto = 1024;
@@ -57,6 +59,10 @@ public class urmInterpreter {
        code.setPreferredSize(new Dimension(720,720));
        debug.setPreferredSize(new Dimension(360,720));
        output.setPreferredSize(new Dimension(50,25));
+
+
+       registros = new int[500];
+       contadorDePrograma = 0;
 
 
        code.setLineWrap(true);
@@ -160,12 +166,127 @@ public class urmInterpreter {
 
         }
     });
+   }
+ 
+   int extraeIarg(String I){
+       String arg = I.substring(I.indexOf("(")+1,I.indexOf(")"));
+       int numero = -1;
+       try {
+            numero = Integer.parseInt(arg);
+       } catch (NumberFormatException e) {
+            System.out.println("Parametro no es un digito, por favor introduza parametro valido.");
+        return -1;
+       }
+       return numero;
+   }
+   void extraeDarg(String I,int[]arg){
+       int inicio = I.indexOf("(")+1;
+       int fin = I.indexOf(",");
+       String argu = I.substring(inicio,fin);
+       anulArgs(arg);
+       try {
+            arg[0] = Integer.parseInt(argu);
+       } catch (NumberFormatException e) {
+            arg[3] = -1;
+            System.out.println("Primer parametro no valido, por favor introduza uno valido.");
+            return;
+
+       }
+       inicio = fin+1;
+       fin = I.indexOf(")");
+       argu = I.substring(inicio,fin);
+       try {
+            arg[1] = Integer.parseInt(argu);
+        
+       } catch (NumberFormatException e) {
+            arg[3] = -1;
+            System.out.println("Segundo parametro no valido, por favor introduza uno valido.");
+
+       }
+
+   }
+   void extraeTarg(String I, int[]arg){
+       int inicio = I.indexOf("(")+1;
+       int fin = I.indexOf(",");
+       String argu = I.substring(inicio,fin);
+       anulArgs(arg);
+       try {
+            arg[0] = Integer.parseInt(argu);
+       } catch (NumberFormatException e) {
+            arg[3] = -1;
+            System.out.println("Primer parametro no valido, por favor introduza uno valido.");
+            return;
+
+       }
+       inicio = fin+1;
+       fin = I.indexOf(",",inicio);
+       argu = I.substring(inicio,fin);
+       try {
+            arg[1] = Integer.parseInt(argu);
+        
+       } catch (NumberFormatException e) {
+            arg[3] = -1;
+            System.out.println("Segundo parametro no valido, por favor introduza uno valido.");
+            return;
+
+       }
+       inicio = fin+1;
+       fin = I.indexOf(")");
+       argu = I.substring(inicio,fin);
+       try {
+            arg[2] = Integer.parseInt(argu);
+        
+       } catch (NumberFormatException e) {
+            arg[3] = -1;
+            System.out.println("Tercer parametro no valido, por favor introduza uno valido.");
+            return;
+
+       }
+
+   }
+   void ejecutaIns(int opCode,int argI,int[]multArg){
+       switch (opCode) {
+        case 1:
+            registros[argI]++;
+            break;
+        case 2:
+            registros[argI] = 0;
+            break;
+        case 3:
+            registros[multArg[0]] = registros[multArg[1]];
+            break;
+        case 4:
+            if(registros[multArg[0]]==registros[multArg[1]]){
+                contadorDePrograma = multArg[2]-1;
+            }
+            break;
 
 
-       
+        default:
+            break;
+       }
+   }
 
+   int interpretaInstruccion(String I){
+        String type = I.substring(0,2);
+        switch(type){
+            case("S("):
+                return 1;
+            case("Z("):
+                return 2;
+            case("T("):
+                return 3;
+            case("J("):
+                return 4;
+            default:
+                return 0;
+        }
+   }
+   void anulArgs(int[]arg){
+       for (int i = 0; i < arg.length; i++) {
+           arg[i] = 0;
+        
+       }
+   }
 
-
-
-   } 
 }
