@@ -8,18 +8,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 public class urmInterpreter {
     private JFrame frame;
     private SpringLayout layout;
-    private JTextArea code, debug, output;
-    private JButton ejecutar,limpiar;
+    private JTextArea code, debug, output,iniciales;
+    private JButton ejecutar,limpia,iniciaStep,step;
     private JMenuBar barra;
     private JMenu Archivo;
     private JMenuItem Cargar,Guardar;
 
-    private int[] registros;
-    private int contadorDePrograma;
+    private int[] registros,argM;
+    private int contadorDePrograma,argI,opCode=-1;
+    private String[] lineasaux;
+    private ArrayList<String> lineas;
     urmInterpreter(){
        int ancho,alto;
        ancho = alto = 1024;
@@ -51,23 +55,31 @@ public class urmInterpreter {
        code = new JTextArea("Codigo fuente");
        debug = new JTextArea("Debug");
        output = new JTextArea("Output");
+       iniciales = new JTextArea("Input");
 
 
        ejecutar = new JButton("Ejecutar");
+       iniciaStep = new JButton("Iniciar Step");
+       step = new JButton("Step");
+       limpia = new JButton("Limpiar");
 
 
        code.setPreferredSize(new Dimension(720,720));
        debug.setPreferredSize(new Dimension(360,720));
-       output.setPreferredSize(new Dimension(50,25));
+       output.setPreferredSize(new Dimension(150,25));
+       iniciales.setPreferredSize(new Dimension(150,25));
 
-
-       registros = new int[500];
+       registros = new int[15];
+       argM = new int[4];
        contadorDePrograma = 0;
+
+       
 
 
        code.setLineWrap(true);
        debug.setLineWrap(true);
        output.setLineWrap(true);
+       iniciales.setLineWrap(true);
         
 
        layout.putConstraint(SpringLayout.NORTH, code, 150, SpringLayout.NORTH, frame);
@@ -85,11 +97,29 @@ public class urmInterpreter {
        layout.putConstraint(SpringLayout.NORTH, output, 0, SpringLayout.NORTH, ejecutar);
        layout.putConstraint(SpringLayout.WEST, output, 15, SpringLayout.EAST, ejecutar);
        
+
+       layout.putConstraint(SpringLayout.NORTH, iniciales, 0, SpringLayout.NORTH, output);
+       layout.putConstraint(SpringLayout.WEST, iniciales, 15, SpringLayout.EAST, output);
+
+
+       layout.putConstraint(SpringLayout.NORTH, iniciaStep, 15, SpringLayout.SOUTH, ejecutar);
+       layout.putConstraint(SpringLayout.WEST, iniciaStep, 0, SpringLayout.WEST, ejecutar);
+
+
+       layout.putConstraint(SpringLayout.NORTH, step, 15, SpringLayout.SOUTH, iniciaStep);
+       layout.putConstraint(SpringLayout.WEST, step, 0, SpringLayout.WEST, iniciaStep);
        
+       layout.putConstraint(SpringLayout.NORTH, limpia, 0, SpringLayout.NORTH, step);
+       layout.putConstraint(SpringLayout.WEST, limpia, 15, SpringLayout.EAST, step);
+
        frame.add(code);
        frame.add(debug);
        frame.add(output);
        frame.add(ejecutar);
+       frame.add(iniciales);
+       frame.add(iniciaStep);
+       frame.add(step);
+       frame.add(limpia);
 
 
     Cargar.addActionListener(new ActionListener(){
@@ -117,6 +147,96 @@ public class urmInterpreter {
                }
            }
 
+    });
+    iniciaStep.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent arg0) {
+            opCode = -1;
+            debug.setText("");
+            contadorDePrograma = 1;
+            iniIniciales();
+           lineasaux = code.getText().split("\n");
+           lineas = new ArrayList<String>();
+            for (int i = 0; i < lineasaux.length; i++) {
+                lineas.add(lineasaux[i]);
+            }
+        }
+    });
+    step.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if(contadorDePrograma!=0){
+                opCode = interpretaInstruccion(lineas.get(contadorDePrograma-1));
+                System.out.println(opCode);
+                switch (opCode) {
+                    case 1:
+                        argI = extraeIarg(lineas.get(contadorDePrograma-1));
+                        break;
+                    case 2:
+                        argI = extraeIarg(lineas.get(contadorDePrograma-1));
+                        break;
+                    case 3: 
+                        extraeDarg(lineas.get(contadorDePrograma-1), argM);
+                        break;
+                    case 4:
+                        extraeTarg(lineas.get(contadorDePrograma-1), argM);
+                        break;
+
+                    default:
+                        break;
+                }
+                ejecutaIns(opCode, argI, argM);
+                contadorDePrograma++;
+
+                output.setText(Arrays.toString(registros));
+                if(contadorDePrograma==0){
+                    debug.append("Fin del programa!");
+
+                }
+            }
+        }
+    });
+    ejecutar.addActionListener(new ActionListener() {
+        int argI;
+        int opCode = -1;
+        int[] argM = new int[4];
+        public void actionPerformed(ActionEvent arg0) {
+            debug.setText("");
+            contadorDePrograma = 1;
+            iniIniciales();
+            lineasaux = code.getText().split("\n");
+            lineas = new ArrayList<String>();
+            for (int i = 0; i < lineasaux.length; i++) {
+                lineas.add(lineasaux[i]);
+            }
+            while (contadorDePrograma-1<lineasaux.length && opCode != 0 && contadorDePrograma!=0) {
+                opCode = interpretaInstruccion(lineas.get(contadorDePrograma-1));
+                System.out.println(opCode);
+                switch (opCode) {
+                    case 1:
+                        argI = extraeIarg(lineas.get(contadorDePrograma-1));
+                        break;
+                    case 2:
+                        argI = extraeIarg(lineas.get(contadorDePrograma-1));
+                        break;
+                    case 3: 
+                        extraeDarg(lineas.get(contadorDePrograma-1), argM);
+                        break;
+                    case 4:
+                        extraeTarg(lineas.get(contadorDePrograma-1), argM);
+                        break;
+
+                    default:
+                        break;
+                }
+                ejecutaIns(opCode, argI, argM);
+                contadorDePrograma++;
+
+            }
+            debug.append("Fin del programa!");
+            output.setText(Arrays.toString(registros));
+
+
+        }
     });
     Guardar.addActionListener(new ActionListener() {
         @Override
@@ -166,10 +286,24 @@ public class urmInterpreter {
 
         }
     });
+    limpia.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            anulArgs(argM);
+            debug.setText("");
+            code.setText("");
+            output.setText("");
+            iniciales.setText("");
+            for (int i = 0; i < registros.length; i++) {
+                registros[i] = 0;
+            }
+
+        }
+    });
    }
  
    int extraeIarg(String I){
-       String arg = I.substring(I.indexOf("(")+1,I.indexOf(")"));
+       String arg = I.substring(I.indexOf("(")+1,I.indexOf(")")).replaceAll("\\s+", "");
        int numero = -1;
        try {
             numero = Integer.parseInt(arg);
@@ -182,7 +316,7 @@ public class urmInterpreter {
    void extraeDarg(String I,int[]arg){
        int inicio = I.indexOf("(")+1;
        int fin = I.indexOf(",");
-       String argu = I.substring(inicio,fin);
+       String argu = I.substring(inicio,fin).replaceAll("\\s+", "");
        anulArgs(arg);
        try {
             arg[0] = Integer.parseInt(argu);
@@ -208,7 +342,7 @@ public class urmInterpreter {
    void extraeTarg(String I, int[]arg){
        int inicio = I.indexOf("(")+1;
        int fin = I.indexOf(",");
-       String argu = I.substring(inicio,fin);
+       String argu = I.substring(inicio,fin).replaceAll("\\s+", "");
        anulArgs(arg);
        try {
             arg[0] = Integer.parseInt(argu);
@@ -247,18 +381,30 @@ public class urmInterpreter {
    void ejecutaIns(int opCode,int argI,int[]multArg){
        switch (opCode) {
         case 1:
-            registros[argI]++;
+            System.out.println("hace un S");
+            registros[argI-1]++;
+            debug.append(contadorDePrograma+":R"+argI+" = "+registros[argI-1]+"\n");
             break;
         case 2:
-            registros[argI] = 0;
+            System.out.println("hace un Z");
+            registros[argI-1] = 0;
+            debug.append(contadorDePrograma+":R"+argI+" = "+registros[argI-1]+"\n");
             break;
         case 3:
-            registros[multArg[0]] = registros[multArg[1]];
+            System.out.println("hace un T");
+            registros[multArg[1]-1] = registros[multArg[0]-1];
+            debug.append(contadorDePrograma+":R"+multArg[1]+" = "+registros[multArg[0]-1]+"\n");
             break;
         case 4:
-            if(registros[multArg[0]]==registros[multArg[1]]){
+            System.out.println("hace un J");
+            if(registros[multArg[0]-1]==registros[multArg[1]-1]){
+                debug.append(contadorDePrograma+":Jump to "+multArg[2]+"\n");
                 contadorDePrograma = multArg[2]-1;
             }
+            else{
+                debug.append(contadorDePrograma+":No jump \n");
+            }
+
             break;
 
 
@@ -281,6 +427,13 @@ public class urmInterpreter {
             default:
                 return 0;
         }
+   }
+   void iniIniciales(){
+       String[] valores = iniciales.getText().replaceAll("\\s+", "").split(",");
+       for (int i = 0; i < valores.length; i++) {
+           registros[i] = Integer.parseInt(valores[i]);
+        
+       }
    }
    void anulArgs(int[]arg){
        for (int i = 0; i < arg.length; i++) {
